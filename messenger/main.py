@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import FastAPI
 import uvicorn
 
@@ -5,6 +7,7 @@ from endpoints.login import router as login_router
 from endpoints.user import router as user_router
 from endpoints.utils import router as utils_router
 from messenger.core.db.models import Base
+from messenger.schemas.consumer import consume
 
 app = FastAPI()
 
@@ -20,3 +23,6 @@ async def hello():
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     uvicorn.run('main:app', host='0.0.0.0', port=8080, reload=True)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(consume(hostname="localhost", port="80"))
+    loop.run_forever()
